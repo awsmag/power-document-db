@@ -6,8 +6,10 @@
   "scripts": {
     "lint": "eslint .",
     "prettier": "prettier --write .",
-    "build": "node build.js"
+    "build": "node build.js",
+    "postbuild": "tsc"
   },
+  "types": "dist/types",
   "files": [
     "dist",
     "cert"
@@ -34,5 +36,8 @@
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.3.3",
     "typescript-json-decoder": "^1.0.11"
+  },
+  "directories": {
+    "test": "test"
   }
 }
