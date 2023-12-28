@@ -11,7 +11,7 @@ export async function connectDb(uri: string, ssl: boolean) {
         : {
             tlsCAFile: path.join(
               __dirname,
-              "../certs/rds-combined-ca-bundle.pem",
+              "../certs/global-bundle.pem",
             ),
             tls: true,
           };
