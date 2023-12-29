@@ -2,17 +2,18 @@ import { MongoClient, Db, MongoClientOptions } from "mongodb";
 import path from "path";
 
 let client: MongoClient;
+let db: Db;
 
 export async function connectDb(uri: string, ssl: boolean) {
   try {
-    const options =
+    if (!uri) {
+      throw new Error("Connection String and DB Name are required");
+    }
+    const options: MongoClientOptions =
       ssl === false
         ? {}
         : {
-            tlsCAFile: path.join(
-              __dirname,
-              "../certs/global-bundle.pem",
-            ),
+            tlsCAFile: path.join(__dirname, "../certs/global-bundle.pem"),
             tls: true,
           };
 
@@ -30,10 +31,14 @@ export async function getDbClient(uri: string, ssl: boolean) {
 }
 
 export async function getConfiguredDb(
-  uri: string,
-  ssl: boolean,
-  dbName: string,
+  uri: string = "",
+  ssl: boolean = false,
+  dbName: string = "",
 ): Promise<Db> {
-  const client = await getDbClient(uri, ssl);
-  return client.db(dbName);
+  if (!db) {
+    const client = await getDbClient(uri, ssl);
+    db = client.db(dbName);
+  }
+
+  return db;
 }
