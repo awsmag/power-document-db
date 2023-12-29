@@ -1,5 +1,5 @@
 import config from "./config";
-import { getConfiguredDb } from "./client";
+import { getConfiguredDb as getCDb } from "./client";
 
 export * from "./koa-mw";
 
@@ -12,5 +12,7 @@ export async function connectDb(
     throw new Error("Connection String and Db Name are required");
   }
 
-  await getConfiguredDb(uri, ssl, dbName);
+  await getCDb(uri, ssl, dbName);
 }
+
+export const getConfiguredDb = getCDb;
