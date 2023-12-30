@@ -58,4 +58,9 @@ const ssl = true; // Keep it true when connecting to instance. For local testing
 
   // rest of your code goes here
 })();
+
+// it will be available as `db` in ctx. In your handler use it like below.
+
+const db = ctx.db;
+// perform functions using db
 ```
