@@ -12,7 +12,7 @@ export async function connectDb(
     throw new Error("Connection String and Db Name are required");
   }
 
-  await getCDb(uri, ssl, dbName);
+  return await getCDb(uri, ssl, dbName);
 }
 
 export const getConfiguredDb = getCDb;
