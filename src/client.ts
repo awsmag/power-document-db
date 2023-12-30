@@ -42,3 +42,11 @@ export async function getConfiguredDb(
 
   return db;
 }
+
+export async function closeDbConnection() {
+  if (!client) {
+    throw new Error("Db is not connected");
+  }
+
+  await client.close();
+}
