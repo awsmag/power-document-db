@@ -64,3 +64,5 @@ const ssl = true; // Keep it true when connecting to instance. For local testing
 const db = ctx.db;
 // perform functions using db
 ```
+
+The package is developed and maintained by [S25Digital](https://s25.digital). You can also check our blog [AWSMAG](https://awsmag.com)
