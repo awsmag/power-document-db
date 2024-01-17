@@ -17,3 +17,5 @@ export async function connectDb(
 
 export const getConfiguredDb = getCDb;
 export const closeDbConnection = clDb;
+
+export * from "mongodb";

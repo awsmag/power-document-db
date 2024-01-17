@@ -6,13 +6,16 @@
   "scripts": {
     "lint": "eslint .",
     "prettier": "prettier --write .",
+    "prebuild": "rimraf dist",
     "build": "node build.js",
-    "postbuild": "tsc"
+    "build:types": "tsc",
+    "prepublishOnly": "npm run build"
   },
-  "types": "dist/types",
+  "types": "types",
   "files": [
     "dist",
-    "cert"
+    "cert",
+    "types"
   ],
   "keywords": [],
   "author": "Simranjeet Singh",
@@ -21,7 +24,6 @@
     "mongodb": "^6.3.0"
   },
   "devDependencies": {
-    "koa": "^2.14.2",
     "@types/koa": "^2.13.12",
     "@types/mocha": "^10.0.6",
     "@types/node": "^20.10.5",
@@ -29,9 +31,11 @@
     "esbuild": "^0.19.10",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
+    "koa": "^2.14.2",
     "mocha": "^10.2.0",
     "nyc": "^15.1.0",
     "prettier": "^3.1.1",
+    "rimraf": "^5.0.5",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.3.3",
