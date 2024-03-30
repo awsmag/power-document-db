@@ -1,5 +1,5 @@
 import config from "./config";
-import { getConfiguredDb as getCDb, closeDbConnection as clDb } from "./client";
+import { getConfiguredDb as getCDb, closeDbConnection as clDb, startSesion as sts } from "./client";
 
 export * from "./koa-mw";
 
@@ -17,5 +17,6 @@ export async function connectDb(
 
 export const getConfiguredDb = getCDb;
 export const closeDbConnection = clDb;
+export const startSession = sts;
 
 export * from "mongodb";

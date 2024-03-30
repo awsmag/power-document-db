@@ -1,4 +1,4 @@
-import { MongoClient, Db, MongoClientOptions } from "mongodb";
+import { MongoClient, Db, MongoClientOptions, ClientSession } from "mongodb";
 import path from "path";
 
 let client: MongoClient;
@@ -41,6 +41,19 @@ export async function getConfiguredDb(
   }
 
   return db;
+}
+
+export async function startSesion(
+  { causalConsistency, snapshot } = {
+    causalConsistency: false,
+    snapshot: true,
+  },
+): Promise<ClientSession> {
+  if (!client) {
+    throw new Error("Not connected");
+  }
+
+  return await client.startSession();
 }
 
 export async function closeDbConnection() {
