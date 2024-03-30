@@ -65,4 +65,23 @@ const db = ctx.db;
 // perform functions using db
 ```
 
+### Transactions
+
+To use transactions, you can start a session on the client by using the following method
+
+```javascript
+import { startSession } from "@awsmag/power-document-db";
+
+const session = await startSession();
+
+// start transaction
+session.startTransaction();
+
+// commit or abort transaction
+session.commitTransaction();
+
+session.abortTransaction();
+
+```
+
 The package is developed and maintained by [S25Digital](https://s25.digital). You can also check our blog [AWSMAG](https://awsmag.com)
