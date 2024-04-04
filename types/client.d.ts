@@ -16,6 +16,6 @@ export declare function getConfiguredDb(
   dbName?: string,
 ): Promise<Db>;
 export declare function closeDbConnection(): Promise<void>;
-export declare function startSesion(
+export declare function startSession(
   params?: SessionParams,
 ): Promise<ClientSession>;

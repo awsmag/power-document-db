@@ -43,7 +43,7 @@ export async function getConfiguredDb(
   return db;
 }
 
-export async function startSesion(
+export async function startSession(
   { causalConsistency, snapshot } = {
     causalConsistency: false,
     snapshot: true,
