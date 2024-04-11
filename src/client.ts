@@ -4,16 +4,21 @@ import path from "path";
 let client: MongoClient;
 let db: Db;
 
-export async function connectDb(uri: string, ssl: boolean) {
+export async function connectDb(uri: string, ssl: boolean, tlsCAFile: string = "") {
   try {
     if (!uri) {
       throw new Error("Connection String and DB Name are required");
     }
+
+    if (ssl === true && !tlsCAFile) {
+      throw new Error("CA File path required for ssl connection");
+    }
+
     const options: MongoClientOptions =
       ssl === false
         ? {}
         : {
-            tlsCAFile: path.join(__dirname, "../certs/global-bundle.pem"),
+            tlsCAFile: tlsCAFile,
             tls: true,
           };
 
@@ -23,9 +28,9 @@ export async function connectDb(uri: string, ssl: boolean) {
   }
 }
 
-export async function getDbClient(uri: string, ssl: boolean) {
+export async function getDbClient(uri: string, ssl: boolean, tlsCAFile = "") {
   if (!client) {
-    await connectDb(uri, ssl);
+    await connectDb(uri, ssl, tlsCAFile);
   }
   return client;
 }
@@ -34,9 +39,10 @@ export async function getConfiguredDb(
   uri: string = "",
   ssl: boolean = false,
   dbName: string = "",
+  tlsCAFile: string = ""
 ): Promise<Db> {
   if (!db) {
-    const client = await getDbClient(uri, ssl);
+    const client = await getDbClient(uri, ssl, tlsCAFile);
     db = client.db(dbName);
   }
 
@@ -53,7 +59,10 @@ export async function startSession(
     throw new Error("Not connected");
   }
 
-  return await client.startSession();
+  return await client.startSession({
+    causalConsistency,
+    snapshot
+  });
 }
 
 export async function closeDbConnection() {
