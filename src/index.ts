@@ -7,12 +7,13 @@ export async function connectDb(
   uri: string = config.uri,
   dbName: string = config.name,
   ssl: boolean = true,
+  tlsCAFile: string = ""
 ) {
   if (!uri || !dbName) {
     throw new Error("Connection String and Db Name are required");
   }
 
-  return await getCDb(uri, ssl, dbName);
+  return await getCDb(uri, ssl, dbName, tlsCAFile);
 }
 
 export const getConfiguredDb = getCDb;
