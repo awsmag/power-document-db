@@ -37,7 +37,8 @@ async function useDbWithoutEnvVarSet() {
   const uri = "mongodb://localhost:27017";
   const dbName = "test";
   const ssl = true; // Keep it true when connecting to instance. For local testing and docker container keep it false
-  return await connectDb(uri, dbName, ssl); // if en variables are not set
+  const tlsCAFile = "./certs/global-bundle.pem"; // mandatory when it is set to true. You will get this from AWS under the steps of how to connect to AWS document Db
+  return await connectDb(uri, dbName, ssl, tlsCAFile); // if en variables are not set
 }
 ```
 
@@ -51,9 +52,10 @@ const server = new Koa();
 const uri = "mongodb://localhost:27017";
 const dbName = "test";
 const ssl = true; // Keep it true when connecting to instance. For local testing and docker container keep it false
+const tlsCAFile = "./certs/global-bundle.pem"; // mandatory when it is set to true. You will get this from AWS under the steps of how to connect to AWS document Db
 
 (async () => {
-  await connectDb(uri, dbName, ssl); // if en variables are not set
+  await connectDb(uri, dbName, ssl, tlsCAFile); // if en variables are not set
   server.use(getDbCLientMw());
 
   // rest of your code goes here
@@ -76,6 +78,8 @@ const session = await startSession();
 
 // start transaction
 session.startTransaction();
+
+await db.insertOne({}, {session}); // use the session in options of the used command to binfd it to particular session and use transaction
 
 // commit or abort transaction
 session.commitTransaction();
