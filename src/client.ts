@@ -10,17 +10,14 @@ import {
 } from "mongodb";
 import pino from "pino";
 
+import { IWatchStorage } from "./storage";
+
 let client: MongoClient;
 let db: Db;
 
 const logger = pino({
-  name: "@awsmag/power-document-db/logger"
+  name: "@awsmag/power-document-db/logger",
 });
-
-export interface IWatchStorage {
-  getToken: (key: string) => Promise<ResumeToken | null>;
-  saveToken: (key: string, token: ResumeToken) => Promise<void>;
-}
 
 export async function connectDb(
   uri: string,
@@ -117,34 +114,48 @@ export async function watchCollection({
   }
 
   if (Array.isArray(filter) === false) {
-    throw new Error(
-      "Filter should be a pipeline for change stream",
-    );
+    throw new Error("Filter should be a pipeline for change stream");
   }
 
-  // const storageClient: IWatchStorage = 
+  // const storageClient: IWatchStorage =
   const db = await getConfiguredDb();
   const colls = db.collection(collection);
 
   const resumeToken = await storage.getToken(key);
-  const changeStream: ChangeStream = colls.watch(filter, { resumeAfter: resumeToken });
+  const changeStream: ChangeStream = colls.watch(filter, {
+    resumeAfter: resumeToken,
+  });
 
-  changeStream.on('change', async (change) => {
+  changeStream.on("change", async (change) => {
     await process(change);
     const token = change._id as ResumeToken;
     await storage.saveToken(key, token);
   });
 
-  changeStream.on('error', async (error) => {
-    logger.error('Change stream error:', error);
+  changeStream.on("error", async (error) => {
+    logger.error("Change stream error:", error);
     await changeStream.close();
     setTimeout(async () => {
-      await watchCollection({collection, process, key, filter, storageType, storage});
+      await watchCollection({
+        collection,
+        process,
+        key,
+        filter,
+        storageType,
+        storage,
+      });
     }, 1000); // Retry after 1 second
   });
 
-  changeStream.on('close', async () => {
-    logger.warn('Change stream closed. Restarting...');
-    await watchCollection({collection, process, key, filter, storageType, storage});
+  changeStream.on("close", async () => {
+    logger.warn("Change stream closed. Restarting...");
+    await watchCollection({
+      collection,
+      process,
+      key,
+      filter,
+      storageType,
+      storage,
+    });
   });
 }
