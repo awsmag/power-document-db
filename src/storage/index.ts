@@ -1,9 +1,7 @@
-import { ResumeToken } from "mongodb";
+import { IWatchStorage } from "./storage";
+import { getRedisStorage } from "./RedisStorage";
 
-export interface IWatchStorage {
-  getToken: (key: string) => Promise<ResumeToken | null>;
-  saveToken: (key: string, token: ResumeToken) => Promise<void>;
-}
+export * from "./storage";
 
 export async function getStorageClient(
   type: "Custom" | "Memory" | "Redis",
@@ -12,7 +10,7 @@ export async function getStorageClient(
     case "Memory":
       return {} as IWatchStorage;
     case "Redis":
-      return {} as IWatchStorage;
+      return await getRedisStorage();
     default:
       throw new Error("Invalid Storage type");
   }
