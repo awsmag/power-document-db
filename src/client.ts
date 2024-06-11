@@ -8,9 +8,14 @@ import {
   ChangeStreamDocument,
   Document,
 } from "mongodb";
+import pino from "pino";
 
 let client: MongoClient;
 let db: Db;
+
+const logger = pino({
+  name: "@awsmag/power-document-db/logger"
+});
 
 export interface IWatchStorage {
   getToken: (key: string) => Promise<ResumeToken | null>;
@@ -131,7 +136,7 @@ export async function watchCollection({
   });
 
   changeStream.on('error', async (error) => {
-    // console.error('Change stream error:', error); Implement error
+    logger.error('Change stream error:', error);
     await changeStream.close();
     setTimeout(async () => {
       await watchCollection({collection, process, key, filter, storageType, storage});
@@ -139,7 +144,7 @@ export async function watchCollection({
   });
 
   changeStream.on('close', async () => {
-    // console.log('Change stream closed. Restarting...'); implement logging
+    logger.warn('Change stream closed. Restarting...');
     await watchCollection({collection, process, key, filter, storageType, storage});
   });
 }
