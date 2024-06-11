@@ -10,7 +10,7 @@ import {
 } from "mongodb";
 import pino from "pino";
 
-import { IWatchStorage } from "./storage";
+import { getStorageClient, IWatchStorage } from "./storage";
 
 let client: MongoClient;
 let db: Db;
@@ -117,11 +117,11 @@ export async function watchCollection({
     throw new Error("Filter should be a pipeline for change stream");
   }
 
-  // const storageClient: IWatchStorage =
+  const storageClient: IWatchStorage = storageType === "Custom" ? storage : await getStorageClient(storageType);
   const db = await getConfiguredDb();
   const colls = db.collection(collection);
 
-  const resumeToken = await storage.getToken(key);
+  const resumeToken = await storageClient.getToken(key);
   const changeStream: ChangeStream = colls.watch(filter, {
     resumeAfter: resumeToken,
   });
@@ -129,7 +129,7 @@ export async function watchCollection({
   changeStream.on("change", async (change) => {
     await process(change);
     const token = change._id as ResumeToken;
-    await storage.saveToken(key, token);
+    await storageClient.saveToken(key, token);
   });
 
   changeStream.on("error", async (error) => {
