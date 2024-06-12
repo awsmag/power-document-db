@@ -1,5 +1,6 @@
 import { IWatchStorage } from "./storage";
 import { getRedisStorage } from "./RedisStorage";
+import { getMemoryStorage } from "./MemoryStorage";
 
 export * from "./storage";
 
@@ -8,7 +9,7 @@ export async function getStorageClient(
 ): Promise<IWatchStorage> {
   switch (type) {
     case "Memory":
-      return {} as IWatchStorage;
+      return getMemoryStorage();
     case "Redis":
       return await getRedisStorage();
     default:
