@@ -8,7 +8,7 @@ export * from "./koa-mw";
 export async function connectDb(
   uri: string = config.url,
   dbName: string = config.name,
-  ssl: boolean = true,
+  ssl: boolean = false,
   tlsCAFile: string = ""
 ) {
   if (!uri || !dbName) {

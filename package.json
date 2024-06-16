@@ -10,7 +10,7 @@
     "build": "node build.js",
     "build:types": "tsc",
     "prepublishOnly": "npm run build",
-    "test": "TZ=utc mocha -r esbuild-register 'test/**/*.spec.ts'"
+    "test": "TZ=utc DOTENV_CONFIG_PATH=.env.spec mocha -r esbuild-register -r dotenv/config 'test/**/*.spec.ts' --exit --file 'test/setup.spec.ts'"
   },
   "types": "types",
   "files": [

@@ -1,0 +1,2 @@
+CONNECTION_URI=mongodb://127.0.0.1:8011
+DB_NAME=test

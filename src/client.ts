@@ -19,7 +19,7 @@ const logger = pino({
   name: "@awsmag/power-document-db/logger",
 });
 
-export async function connectDb(
+async function connectDb(
   uri: string,
   ssl: boolean,
   tlsCAFile: string = "",
