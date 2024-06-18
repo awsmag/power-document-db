@@ -9,7 +9,7 @@ describe("The Index", () => {
         try {
           await connectDb(null, "test", false);
         } catch (err) {
-          expect(err.message).to.deep.equal("test");
+          expect(err.message).to.deep.equal("Connection String and Db Name are required");
         }
       });
     });
