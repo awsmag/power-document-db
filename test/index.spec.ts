@@ -13,5 +13,15 @@ describe("The Index", () => {
         }
       });
     });
+
+    describe("when dbName is not provided", () => {
+      it("should throw an error", async () => {
+        try {
+          await connectDb("test", null, false);
+        } catch (err) {
+          expect(err.message).to.deep.equal("Connection String and Db Name are required");
+        }
+      });
+    });
   });
 });
