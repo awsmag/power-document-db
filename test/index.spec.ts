@@ -1,6 +1,6 @@
 import { expect } from "chai";
 
-import { connectDb } from "../src";
+import { connectDb, Db } from "../src";
 
 describe("The Index", () => {
   describe("The connectDb Method", () => {
@@ -21,6 +21,14 @@ describe("The Index", () => {
         } catch (err) {
           expect(err.message).to.deep.equal("Connection String and Db Name are required");
         }
+      });
+    });
+
+    describe("when it is sucessfully executed", () => {
+      it("should return an instance of Db", async () => {
+        const client = await connectDb();
+
+        expect(client instanceof Db).to.be.true;
       });
     });
   });
