@@ -25,7 +25,7 @@ async function connectDb(
   tlsCAFile: string = "",
 ) {
   if (!uri) {
-    throw new Error("Connection String and DB Name are required");
+    throw new Error("Connection String is required");
   }
 
   if (ssl === true && !tlsCAFile) {
@@ -86,6 +86,7 @@ export async function closeDbConnection() {
   }
 
   await client.close();
+  client = null;
 }
 
 export async function watchCollection({
@@ -122,9 +123,14 @@ export async function watchCollection({
   const colls = db.collection(collection);
 
   const resumeToken = await storageClient.getToken(key);
-  const changeStream: ChangeStream = colls.watch(filter, {
-    resumeAfter: resumeToken,
-  });
+
+  const opts: Record<string, any> = {}; // eslint-disable-line
+
+  if(resumeToken) {
+    opts.resumeAfter = resumeToken;
+  }
+
+  const changeStream: ChangeStream = colls.watch(filter, opts);
 
   changeStream.on("change", async (change) => {
     await process(change);
