@@ -1,15 +1,31 @@
-import { MongoClient, Db, MongoClientOptions, ClientSession } from "mongodb";
+import {
+  MongoClient,
+  Db,
+  MongoClientOptions,
+  ClientSession,
+  ResumeToken,
+  ChangeStream,
+  ChangeStreamDocument,
+  Document,
+} from "mongodb";
+import pino from "pino";
+
+import { getStorageClient, IWatchStorage } from "./storage";
 
 let client: MongoClient;
 let db: Db;
 
-export async function connectDb(
+const logger = pino({
+  name: "@awsmag/power-document-db/logger",
+});
+
+async function connectDb(
   uri: string,
   ssl: boolean,
   tlsCAFile: string = "",
 ) {
   if (!uri) {
-    throw new Error("Connection String and DB Name are required");
+    throw new Error("Connection String is required");
   }
 
   if (ssl === true && !tlsCAFile) {
@@ -70,4 +86,82 @@ export async function closeDbConnection() {
   }
 
   await client.close();
+  client = null;
+}
+
+export async function watchCollection({
+  collection,
+  process,
+  key,
+  storageType = "Memory",
+  filter = [],
+  storage,
+}: {
+  collection: string;
+  process: (change: ChangeStreamDocument<Document>) => Promise<void>;
+  key: string;
+  storageType?: "Memory" | "Redis" | "Custom";
+  filter?: Array<Record<string, any>>; // eslint-disable-line
+  storage?: IWatchStorage;
+}): Promise<void> {
+  if (!client) {
+    throw new Error("Db is not connected");
+  }
+
+  if (storageType === "Custom" && !storage) {
+    throw new Error(
+      "A Storage needs to be provided with the Custom storage type",
+    );
+  }
+
+  if (Array.isArray(filter) === false) {
+    throw new Error("Filter should be a pipeline for change stream");
+  }
+
+  const storageClient: IWatchStorage = storageType === "Custom" ? storage : await getStorageClient(storageType);
+  const db = await getConfiguredDb();
+  const colls = db.collection(collection);
+
+  const resumeToken = await storageClient.getToken(key);
+
+  const opts: Record<string, any> = {}; // eslint-disable-line
+
+  if(resumeToken) {
+    opts.resumeAfter = resumeToken;
+  }
+
+  const changeStream: ChangeStream = colls.watch(filter, opts);
+
+  changeStream.on("change", async (change) => {
+    await process(change);
+    const token = change._id as ResumeToken;
+    await storageClient.saveToken(key, token);
+  });
+
+  changeStream.on("error", async (error) => {
+    logger.error("Change stream error:", error);
+    await changeStream.close();
+    setTimeout(async () => {
+      await watchCollection({
+        collection,
+        process,
+        key,
+        filter,
+        storageType,
+        storage,
+      });
+    }, 1000); // Retry after 1 second
+  });
+
+  changeStream.on("close", async () => {
+    logger.warn("Change stream closed. Restarting...");
+    await watchCollection({
+      collection,
+      process,
+      key,
+      filter,
+      storageType,
+      storage,
+    });
+  });
 }

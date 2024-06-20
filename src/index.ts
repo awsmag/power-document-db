@@ -1,12 +1,14 @@
 import config from "./config";
-import { getConfiguredDb as getCDb, closeDbConnection as clDb, startSession as sts } from "./client";
+import { getConfiguredDb as getCDb } from "./client";
+
+export * from "./client";
 
 export * from "./koa-mw";
 
 export async function connectDb(
-  uri: string = config.uri,
+  uri: string = config.url,
   dbName: string = config.name,
-  ssl: boolean = true,
+  ssl: boolean = false,
   tlsCAFile: string = ""
 ) {
   if (!uri || !dbName) {
@@ -15,9 +17,5 @@ export async function connectDb(
 
   return await getCDb(uri, ssl, dbName, tlsCAFile);
 }
-
-export const getConfiguredDb = getCDb;
-export const closeDbConnection = clDb;
-export const startSession = sts;
 
 export * from "mongodb";

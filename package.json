@@ -1,6 +1,6 @@
 {
   "name": "@awsmag/power-document-db",
-  "version": "1.5.1",
+  "version": "1.6.0",
   "description": "A package to connect and work with document db (mongodb compatible)",
   "main": "dist/index.js",
   "scripts": {
@@ -9,7 +9,8 @@
     "prebuild": "rimraf dist",
     "build": "node build.js",
     "build:types": "tsc",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "test": "TZ=utc DOTENV_CONFIG_PATH=.env.spec mocha -r esbuild-register -r dotenv/config 'test/**/*.spec.ts' --exit --timeout 10000 --file 'test/setup.spec.ts'"
   },
   "types": "types",
   "files": [
@@ -20,24 +21,34 @@
   "author": "Simranjeet Singh",
   "license": "MIT",
   "dependencies": {
-    "mongodb": "^6.3.0"
+    "mongodb": "^6.7.0",
+    "node-cache": "^5.1.2",
+    "pino": "^9.1.0",
+    "redis": "^4.6.14"
   },
   "devDependencies": {
-    "@types/koa": "^2.13.12",
+    "@types/chai": "^4.3.16",
+    "@types/koa": "^2.15.0",
     "@types/mocha": "^10.0.6",
-    "@types/node": "^20.10.5",
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "esbuild": "^0.19.10",
+    "@types/node": "^20.14.2",
+    "@types/sinon": "^17.0.3",
+    "@typescript-eslint/eslint-plugin": "^7.13.0",
+    "chai": "^5.1.1",
+    "dotenv": "^16.4.5",
+    "esbuild": "^0.21.5",
+    "esbuild-register": "^3.5.0",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
-    "koa": "^2.14.2",
-    "mocha": "^10.2.0",
-    "nyc": "^15.1.0",
-    "prettier": "^3.1.1",
-    "rimraf": "^5.0.5",
+    "koa": "^2.15.3",
+    "mocha": "^10.4.0",
+    "mongodb-memory-server": "^9.3.0",
+    "nyc": "^17.0.0",
+    "prettier": "^3.3.2",
+    "rimraf": "^5.0.7",
+    "sinon": "^18.0.0",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.3.3",
+    "typescript": "^5.4.5",
     "typescript-json-decoder": "^1.0.11"
   },
   "directories": {
